@@ -64,8 +64,8 @@ and install it as the site user:
 
 ```bash
 su - mysite
-mkp add whatsapp_notify-2.0.0.mkp
-mkp enable whatsapp_notify 2.0.0
+mkp add whatsapp_notify-2.0.1.mkp
+mkp enable whatsapp_notify 2.0.1
 ```
 
 Or upload it in the GUI under **Setup → Maintenance → Extension packages**.
@@ -176,6 +176,13 @@ The script writes a specific error to stderr and exits `2` on every failure, so
 
 ## CHANGELOG
 
+### 2026-09 — v2.0.1
+
+* **Fixed:** the Checkmk Exchange rejected the package with "The description
+  field has invalid content". The manifest description now uses only the
+  character set that accepted packages use, and `build-mkp.py` enforces it at
+  build time.
+
 ### 2026-09 — v2.0
 
 * **Fixed:** service output containing `"`, `\` or newlines produced a malformed
@@ -206,9 +213,9 @@ The script writes a specific error to stderr and exits `2` on every failure, so
 standard library — **no Checkmk site is required**:
 
 ```bash
-python3 build-mkp.py --version 2.0.0
-# built dist/whatsapp_notify-2.0.0.mkp (6328 bytes)
-# verified whatsapp_notify-2.0.0.mkp: manifest consistent, 2 files, permissions correct
+python3 build-mkp.py --version 2.0.1
+# built dist/whatsapp_notify-2.0.1.mkp (7432 bytes)
+# verified whatsapp_notify-2.0.1.mkp: manifest consistent, 2 files, permissions correct
 ```
 
 An MKP is a gzipped tar holding a `info` manifest (a Python dict literal), the
@@ -229,9 +236,9 @@ docker run -dit --name cmk-test -p 8080:5000 \
   -e CMK_PASSWORD=test1234 --tmpfs /opt/omd/sites/cmk/tmp:uid=1000,gid=1000 \
   checkmk/check-mk-raw:2.3.0-latest
 
-docker cp dist/whatsapp_notify-2.0.0.mkp cmk-test:/tmp/
-docker exec -u cmk cmk-test mkp add /tmp/whatsapp_notify-2.0.0.mkp
-docker exec -u cmk cmk-test mkp enable whatsapp_notify 2.0.0
+docker cp dist/whatsapp_notify-2.0.1.mkp cmk-test:/tmp/
+docker exec -u cmk cmk-test mkp add /tmp/whatsapp_notify-2.0.1.mkp
+docker exec -u cmk cmk-test mkp enable whatsapp_notify 2.0.1
 ```
 
 The GUI is then at <http://localhost:8080/cmk/> (user `cmkadmin`).

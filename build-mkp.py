@@ -38,23 +38,28 @@ PACKAGED_BY = "waapi build-mkp.py 1.0"
 
 DESCRIPTION = """\
 Send Checkmk host and service notifications as WhatsApp messages through the
-WaAPI REST API (https://waapi.app).
+WaAPI REST API.
 
 The plugin is a single bash script with no dependencies beyond curl. Configure
-it under Setup > Events > Notifications with the notification method
-"Push Notification (using WhatsApp with waapi.app)" and these parameters:
+it under Setup - Events - Notifications, choose the notification method Push
+Notification (using WhatsApp with waapi.app), select Call with the following
+parameters, and pass:
 
-  1  WaAPI instance ID          e.g. 123
-  2  Destination chat ID        e.g. 4915112345678@c.us or <group-id>@g.us
-  3  WaAPI API token
-  4  API base URL               optional
+  1. The WaAPI instance ID, for example 123.
+  2. The destination chat ID. A phone number suffixed with c.us addresses one
+     person, a group ID suffixed with g.us addresses a group.
+  3. The WaAPI API token. Can also be supplied through the environment
+     variable WAAPI-API-TOKEN instead, to keep it out of the rule.
+  4. Optionally, an alternative API base URL.
 
-Verify the configuration from the site shell before creating the rule:
-
-  ~/local/share/check_mk/notifications/check_mk_whatsapp-notify.sh \\
-      --test <instance> <chatId> <token>
+The script has a test mode that sends one message from the site shell and
+prints the exact reason if the API refuses, so the configuration can be
+verified before a rule is created. Every failure path exits non zero with a
+specific reason, so a notification that cannot be delivered is retried and
+recorded by Checkmk rather than reported as sent.
 
 Requires a waapi.app account with an instance connected to a phone number.
+Source, documentation and issue tracker are linked below.
 
 WhatsApp is a trademark of WhatsApp LLC. This package is an independent
 integration and is not affiliated with, endorsed or sponsored by WhatsApp LLC,
@@ -69,6 +74,28 @@ PARTS: dict[str, list[tuple[Path, str]]] = {
     "doc": [(REPO / "README.md", "whatsapp_notify.md")],
 }
 EXECUTABLE_PARTS = {"notifications", "agents", "bin", "alert_handlers"}
+
+
+# The Checkmk Exchange rejects an upload with "The description field has
+# invalid content" if the description carries characters it treats as markup.
+# The rule is not documented anywhere; this allowlist is the character profile
+# of packages the Exchange demonstrably accepts. Angle brackets, backslashes,
+# quotes, at-signs, slashes, tildes and underscores were all present in the
+# rejected version, so none of them are assumed safe.
+DESCRIPTION_ALLOWED = set(
+    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 \n.,:;-()!?'"
+)
+
+
+def check_description(text: str) -> None:
+    bad = sorted({c for c in text if c not in DESCRIPTION_ALLOWED})
+    if bad:
+        raise SystemExit(
+            "description contains characters the Checkmk Exchange rejects: "
+            + " ".join(repr(c) for c in bad)
+        )
+    if not text.isascii():
+        raise SystemExit("description must be plain ASCII")
 
 
 def _tar_info(name: str, size: int, mode: int = 0o644) -> tarfile.TarInfo:
@@ -101,6 +128,8 @@ def build(version: str, output_dir: Path) -> Path:
         for source, _ in entries:
             if not source.is_file():
                 raise SystemExit(f"missing source file: {source}")
+
+    check_description(DESCRIPTION)
 
     manifest = {
         "author": AUTHOR,
