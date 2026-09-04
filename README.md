@@ -59,7 +59,7 @@ To send alerts from Checkmk to WhatsApp you need:
 ### Option A — MKP package (recommended)
 
 Download `waapi_notify-<version>.mkp` from the
-[latest release](https://github.com/WaAPIapp/check_mk-whatsapp-notify/releases/latest)
+[latest release](https://github.com/WaAPIapp/check_mk-waapi-notify/releases/latest)
 and install it as the site user:
 
 ```bash
@@ -90,7 +90,7 @@ Download the script:
 
 ```bash
 curl -fLo check_mk_waapi-notify.sh \
-  https://raw.githubusercontent.com/WaAPIapp/check_mk-whatsapp-notify/master/check_mk_waapi-notify.sh
+  https://raw.githubusercontent.com/WaAPIapp/check_mk-waapi-notify/master/check_mk_waapi-notify.sh
 ```
 
 Make it executable:

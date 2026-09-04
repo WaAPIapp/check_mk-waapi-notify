@@ -4,7 +4,7 @@
 # Script Name   : check_mk_waapi-notify.sh
 # Description   : Send Checkmk notifications as WhatsApp messages via the WaAPI REST API
 # Author        : WaAPI <info@waapi.app>
-# Homepage      : https://github.com/WaAPIapp/check_mk-whatsapp-notify
+# Homepage      : https://github.com/WaAPIapp/check_mk-waapi-notify
 # License       : BSD 3-Clause "New" or "Revised" License
 #
 # Based on the Checkmk Telegram notification script by Benedikt Filip

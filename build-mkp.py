@@ -32,7 +32,7 @@ REPO = Path(__file__).resolve().parent
 NAME = "waapi_notify"
 TITLE = "WaAPI notifications"
 AUTHOR = "WaAPI <info@waapi.app>"
-DOWNLOAD_URL = "https://github.com/WaAPIapp/check_mk-whatsapp-notify"
+DOWNLOAD_URL = "https://github.com/WaAPIapp/check_mk-waapi-notify"
 VERSION_MIN_REQUIRED = "2.0.0b1"
 PACKAGED_BY = "waapi build-mkp.py 1.0"
 
