@@ -10,3 +10,5 @@ Thumbs.db
 # Local
 *.local
 dist/
+__pycache__/
+*.pyc
