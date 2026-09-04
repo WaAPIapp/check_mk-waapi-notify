@@ -37,7 +37,7 @@ jobs:
           fi
 
       - name: Check the notification script parses
-        run: bash -n check_mk_whatsapp-notify.sh
+        run: bash -n check_mk_waapi-notify.sh
 
       - name: Build and verify MKP
         run: python3 build-mkp.py --version "${{ steps.version.outputs.value }}"

@@ -33,7 +33,7 @@ Requires `bash` 4.x or newer and `curl` — both present on every OMD site.
 Notifications are usually sent to a WhatsApp group. Here is how a notification
 is structured:
 
-<img src="images/WhatsApp_notification_example.png" alt="Notification example" width="100%"/>
+<img src="images/waapi_notification_example.png" alt="Notification example" width="100%"/>
 
 ## REQUIREMENTS
 
@@ -58,14 +58,14 @@ To send alerts from Checkmk to WhatsApp you need:
 
 ### Option A — MKP package (recommended)
 
-Download `whatsapp_notify-<version>.mkp` from the
+Download `waapi_notify-<version>.mkp` from the
 [latest release](https://github.com/WaAPIapp/check_mk-whatsapp-notify/releases/latest)
 and install it as the site user:
 
 ```bash
 su - mysite
-mkp add whatsapp_notify-2.0.1.mkp
-mkp enable whatsapp_notify 2.0.1
+mkp add waapi_notify-2.0.1.mkp
+mkp enable waapi_notify 2.0.1
 ```
 
 Or upload it in the GUI under **Setup → Maintenance → Extension packages**.
@@ -89,14 +89,14 @@ cd ~/local/share/check_mk/notifications/
 Download the script:
 
 ```bash
-curl -fLo check_mk_whatsapp-notify.sh \
-  https://raw.githubusercontent.com/WaAPIapp/check_mk-whatsapp-notify/master/check_mk_whatsapp-notify.sh
+curl -fLo check_mk_waapi-notify.sh \
+  https://raw.githubusercontent.com/WaAPIapp/check_mk-whatsapp-notify/master/check_mk_waapi-notify.sh
 ```
 
 Make it executable:
 
 ```bash
-chmod +x check_mk_whatsapp-notify.sh
+chmod +x check_mk_waapi-notify.sh
 ```
 
 > Do **not** `git clone` the repository into the notifications directory —
@@ -106,7 +106,7 @@ chmod +x check_mk_whatsapp-notify.sh
 ### Verify the setup before wiring it into Checkmk
 
 ```bash
-./check_mk_whatsapp-notify.sh --test <instance-id> <chat-id> <api-token>
+./check_mk_waapi-notify.sh --test <instance-id> <chat-id> <api-token>
 ```
 
 On success the script prints a confirmation and a test message arrives in the
@@ -214,8 +214,8 @@ standard library — **no Checkmk site is required**:
 
 ```bash
 python3 build-mkp.py --version 2.0.1
-# built dist/whatsapp_notify-2.0.1.mkp (7432 bytes)
-# verified whatsapp_notify-2.0.1.mkp: manifest consistent, 2 files, permissions correct
+# built dist/waapi_notify-2.0.1.mkp (7432 bytes)
+# verified waapi_notify-2.0.1.mkp: manifest consistent, 2 files, permissions correct
 ```
 
 An MKP is a gzipped tar holding a `info` manifest (a Python dict literal), the
@@ -236,9 +236,9 @@ docker run -dit --name cmk-test -p 8080:5000 \
   -e CMK_PASSWORD=test1234 --tmpfs /opt/omd/sites/cmk/tmp:uid=1000,gid=1000 \
   checkmk/check-mk-raw:2.3.0-latest
 
-docker cp dist/whatsapp_notify-2.0.1.mkp cmk-test:/tmp/
-docker exec -u cmk cmk-test mkp add /tmp/whatsapp_notify-2.0.1.mkp
-docker exec -u cmk cmk-test mkp enable whatsapp_notify 2.0.1
+docker cp dist/waapi_notify-2.0.1.mkp cmk-test:/tmp/
+docker exec -u cmk cmk-test mkp add /tmp/waapi_notify-2.0.1.mkp
+docker exec -u cmk cmk-test mkp enable waapi_notify 2.0.1
 ```
 
 The GUI is then at <http://localhost:8080/cmk/> (user `cmkadmin`).

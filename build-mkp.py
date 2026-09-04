@@ -29,8 +29,8 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parent
 
-NAME = "whatsapp_notify"
-TITLE = "WhatsApp notifications (via WaAPI)"
+NAME = "waapi_notify"
+TITLE = "WaAPI notifications"
 AUTHOR = "WaAPI <info@waapi.app>"
 DOWNLOAD_URL = "https://github.com/WaAPIapp/check_mk-whatsapp-notify"
 VERSION_MIN_REQUIRED = "2.0.0b1"
@@ -70,8 +70,8 @@ Meta or Checkmk GmbH.
 # Permissions follow Checkmk's own mapping: notifications are executable (0700),
 # everything else is 0600.
 PARTS: dict[str, list[tuple[Path, str]]] = {
-    "notifications": [(REPO / "check_mk_whatsapp-notify.sh", "check_mk_whatsapp-notify.sh")],
-    "doc": [(REPO / "README.md", "whatsapp_notify.md")],
+    "notifications": [(REPO / "check_mk_waapi-notify.sh", "check_mk_waapi-notify.sh")],
+    "doc": [(REPO / "README.md", "waapi_notify.md")],
 }
 EXECUTABLE_PARTS = {"notifications", "agents", "bin", "alert_handlers"}
 

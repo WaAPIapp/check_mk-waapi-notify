@@ -1,7 +1,7 @@
 #!/bin/bash
 # Push Notification (using WhatsApp with waapi.app)
 #
-# Script Name   : check_mk_whatsapp-notify.sh
+# Script Name   : check_mk_waapi-notify.sh
 # Description   : Send Checkmk notifications as WhatsApp messages via the WaAPI REST API
 # Author        : WaAPI <info@waapi.app>
 # Homepage      : https://github.com/WaAPIapp/check_mk-whatsapp-notify
@@ -21,7 +21,7 @@
 #   4  API base URL                   optional, defaults to https://waapi.app/api/v1
 #
 # Manual test (outside Checkmk):
-#   ./check_mk_whatsapp-notify.sh --test <instance> <chatId> <token>
+#   ./check_mk_waapi-notify.sh --test <instance> <chatId> <token>
 # ======================================================================================
 
 set -uo pipefail
@@ -31,7 +31,7 @@ readonly CURL_MAX_TIME=25
 readonly CURL_RETRIES=2
 
 die() {
-    echo "check_mk_whatsapp-notify: $*" >&2
+    echo "check_mk_waapi-notify: $*" >&2
     exit 2
 }
 
@@ -84,7 +84,7 @@ api_base="${api_base%/}"
 # Message
 # --------------------------------------------------------------------------------------
 if [ "$TEST_MODE" -eq 1 ]; then
-    MESSAGE=$'✅ Checkmk test notification\n\nIf you can read this, check_mk_whatsapp-notify is configured correctly.'
+    MESSAGE=$'✅ Checkmk test notification\n\nIf you can read this, check_mk_waapi-notify is configured correctly.'
 else
     if [ "${NOTIFY_WHAT-}" = "SERVICE" ]; then
         STATE="${NOTIFY_SERVICESHORTSTATE-}"
