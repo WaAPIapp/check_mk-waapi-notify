@@ -1,0 +1,54 @@
+name: Build MKP
+
+# Builds the Checkmk extension package. No Checkmk site is required — the MKP
+# format is a gzipped tar of per-part tars plus a manifest, and build-mkp.py
+# writes it with the Python standard library alone.
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Package version (e.g. 2.0.0)'
+        required: true
+        default: '2.0.0'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Determine version
+        id: version
+        run: |
+          if [ -n "${{ github.event.inputs.version }}" ]; then
+            echo "value=${{ github.event.inputs.version }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "value=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Check the notification script parses
+        run: bash -n check_mk_whatsapp-notify.sh
+
+      - name: Build and verify MKP
+        run: python3 build-mkp.py --version "${{ steps.version.outputs.value }}"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mkp
+          path: dist/*.mkp
+
+      - name: Attach to release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*.mkp

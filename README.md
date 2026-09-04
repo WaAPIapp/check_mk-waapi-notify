@@ -56,6 +56,22 @@ To send alerts from Checkmk to WhatsApp you need:
 
 ## INSTALLATION
 
+### Option A — MKP package (recommended)
+
+Download `whatsapp_notify-<version>.mkp` from the
+[latest release](https://github.com/WaAPIapp/check_mk-whatsapp-notify/releases/latest)
+and install it as the site user:
+
+```bash
+su - mysite
+mkp add whatsapp_notify-2.0.0.mkp
+mkp enable whatsapp_notify 2.0.0
+```
+
+Or upload it in the GUI under **Setup → Maintenance → Extension packages**.
+
+### Option B — single script
+
 Switch to your Checkmk site user:
 
 ```bash
@@ -180,6 +196,45 @@ The script writes a specific error to stderr and exits `2` on every failure, so
   environment variable.
 * **Changed:** installation now downloads the single script instead of cloning
   the repository into the notifications directory.
+* **Added:** the plugin is now distributed as an installable MKP extension
+  package, built by `build-mkp.py` without needing a Checkmk site.
+
+
+## BUILDING THE MKP
+
+`build-mkp.py` writes the Checkmk extension package using nothing but the Python
+standard library — **no Checkmk site is required**:
+
+```bash
+python3 build-mkp.py --version 2.0.0
+# built dist/whatsapp_notify-2.0.0.mkp (6328 bytes)
+# verified whatsapp_notify-2.0.0.mkp: manifest consistent, 2 files, permissions correct
+```
+
+An MKP is a gzipped tar holding a `info` manifest (a Python dict literal), the
+same manifest as `info.json`, and one tar per package part. A notification
+script belongs to the `notifications` part, which Checkmk installs into
+`~/local/share/check_mk/notifications/` with mode `0700`. The script asserts all
+of this against the package it just wrote, so a malformed MKP fails at build
+time instead of on someone's site.
+
+Pushing a `v*` tag builds the package in CI and attaches it to the release.
+
+### Testing without a Checkmk installation
+
+Spin up a throwaway site in Docker:
+
+```bash
+docker run -dit --name cmk-test -p 8080:5000 \
+  -e CMK_PASSWORD=test1234 --tmpfs /opt/omd/sites/cmk/tmp:uid=1000,gid=1000 \
+  checkmk/check-mk-raw:2.3.0-latest
+
+docker cp dist/whatsapp_notify-2.0.0.mkp cmk-test:/tmp/
+docker exec -u cmk cmk-test mkp add /tmp/whatsapp_notify-2.0.0.mkp
+docker exec -u cmk cmk-test mkp enable whatsapp_notify 2.0.0
+```
+
+The GUI is then at <http://localhost:8080/cmk/> (user `cmkadmin`).
 
 ## CREDITS
 
