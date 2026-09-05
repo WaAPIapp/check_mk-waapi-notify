@@ -128,9 +128,18 @@ payload="{\"chatId\":\"$(json_escape "$destination")\",\"message\":\"$(json_esca
 # --------------------------------------------------------------------------------------
 # Delivery
 #
-# The API answers HTTP 200 with {"status":"error"} for application-level failures, so a
-# non-zero curl exit status alone is not a sufficient success check — the previous
-# version reported every such failure to Checkmk as a delivered notification.
+# A non-zero curl exit status alone is not a sufficient success check: the API answers
+# HTTP 200 for application-level failures, and it does so in two places.
+#
+#   "status"        did the request reach the instance
+#   "data.status"   did the instance carry the action out  <- the authoritative one
+#
+# A malformed chat ID comes back as {"status":"success","data":{"status":"error",
+# "message":"incorrect chatId format."}} — nothing was sent. The check below searches
+# the whole body rather than one field, so it sees either envelope. That is deliberate,
+# not incidental: parsing JSON in bash to reach data.status would need jq, which is not
+# on every Checkmk site, and erring towards "report a failure" is the right bias for a
+# notification plugin.
 # --------------------------------------------------------------------------------------
 response=$(curl --silent --show-error \
                 --request POST "${api_base}/instances/${instance}/client/action/send-message" \
